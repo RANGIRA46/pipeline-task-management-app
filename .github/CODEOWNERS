@@ -1,0 +1,21 @@
+# Default owners for everything in the repo
+# Replace these with your actual GitHub usernames
+* @team-member1 @team-member2 @team-member3 @team-member4
+
+# Infrastructure code
+/terraform/ @infrastructure-engineer
+
+# Configuration management
+/ansible/ @configuration-manager
+
+# CI/CD pipelines
+/.github/workflows/ @devops-engineer
+
+# Security configurations
+/security/ @security-engineer
+
+# Frontend code
+/frontend/ @team-member1 @team-member2
+
+# Backend code
+/backend/ @team-member2 @team-member3

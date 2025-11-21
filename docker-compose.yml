@@ -1,0 +1,70 @@
+version: '3.8'
+
+services:
+  database:
+    image: postgres:15-alpine
+    container_name: taskmanager-db
+    environment:
+      POSTGRES_USER: ${DB_USER:-devops}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-devops123}
+      POSTGRES_DB: ${DB_NAME:-devops_app}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-devops}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "5432:5432"
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: taskmanager-backend
+    environment:
+      DATABASE_URL: postgresql://${DB_USER:-devops}:${DB_PASSWORD:-devops123}@database:5432/${DB_NAME:-devops_app}
+      PORT: 3000
+      NODE_ENV: development
+      CORS_ORIGIN: http://localhost:5173
+    ports:
+      - "3000:3000"
+    depends_on:
+      database:
+        condition: service_healthy
+    networks:
+      - app-network
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    command: npm run dev
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      target: development
+    container_name: taskmanager-frontend
+    environment:
+      VITE_API_URL: http://localhost:3000
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+    networks:
+      - app-network
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    command: npm run dev
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  app-network:
+    driver: bridge

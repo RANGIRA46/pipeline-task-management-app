@@ -1,0 +1,11 @@
+# Trivy Ignore File
+# Add CVE IDs here with justification for ignoring them
+
+# Example format:
+# CVE-YYYY-XXXXX: Justification for ignoring this vulnerability
+# - Why it's acceptable to ignore
+# - What compensating controls are in place
+# - When this will be reviewed
+
+# Currently no CVEs are being ignored
+# All vulnerabilities should be addressed unless there is a specific justification
