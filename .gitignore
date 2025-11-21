@@ -70,3 +70,4 @@ terraform-outputs.json
 # Monitoring and logs
 logs/
 *.log
+.terraformrc 

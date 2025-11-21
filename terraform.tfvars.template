@@ -1,0 +1,57 @@
+# ========================================
+# Azure Terraform Variables
+# ========================================
+# INSTRUCTIONS:
+# 1. Open AZURE_CREDENTIALS.md to view the screenshot locations
+# 2. Open each screenshot and copy the exact values
+# 3. Replace the placeholders below with your values
+# 4. Save this file as: terraform/terraform.tfvars
+# 5. Run: terraform-docker.bat init
+# ========================================
+
+# ------------------------
+# Azure Service Principal Credentials
+# ------------------------
+# Screenshot 1: app_overview_with_ids_1763739102803.png
+# Look for "Application (client) ID" on the Overview page
+arm_client_id = "PASTE_APPLICATION_CLIENT_ID_FROM_SCREENSHOT_1"
+
+# Screenshot 2: secret_value_visible_1763739182553.png  
+# Look for the VALUE column (long string) in the Certificates & secrets page
+# ⚠️ THIS IS ONLY SHOWN ONCE - COPY IT NOW!
+arm_client_secret = "PASTE_CLIENT_SECRET_VALUE_FROM_SCREENSHOT_2"
+
+# Screenshot 3: subscriptions_page_1763739251529.png
+# Look for "Subscription ID" in the subscriptions list
+arm_subscription_id = "PASTE_SUBSCRIPTION_ID_FROM_SCREENSHOT_3"
+
+# Screenshot 1: app_overview_with_ids_1763739102803.png
+# Look for "Directory (tenant) ID" on the Overview page  
+arm_tenant_id = "PASTE_DIRECTORY_TENANT_ID_FROM_SCREENSHOT_1"
+
+# ------------------------
+# Project Configuration
+# ------------------------
+project_name   = "devopspipeline"
+environment    = "dev"
+location       = "East US"
+vm_size        = "Standard_B2s"
+admin_username = "azureuser"
+
+# ------------------------
+# SSH Public Key
+# ------------------------
+# Generate with: ssh-keygen -t rsa -b 4096 -C "azure-vm-key"
+# View with: type %USERPROFILE%\.ssh\id_rsa.pub
+# Copy the ENTIRE line starting with "ssh-rsa" and ending with the email
+ssh_public_key = "ssh-rsa PASTE_YOUR_FULL_PUBLIC_KEY_HERE"
+
+# ========================================
+# NEXT STEPS:
+# 1. Fill in all 5 values above
+# 2. Save this file as: terraform/terraform.tfvars
+#    (NOT terraform.tfvars.template - rename it!)  
+# 3. Run: terraform-docker.bat init
+# 4. Run: terraform-docker.bat plan
+# 5. Run: terraform-docker.bat apply
+# ========================================
