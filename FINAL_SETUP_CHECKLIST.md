@@ -1,4 +1,4 @@
-# ✅ FINAL SETUP CHECKLIST
+cd# ✅ FINAL SETUP CHECKLIST
 
 **Created**: 2025-11-21 17:35  
 **Status**: Service Principal created ✅ | terraform.tfvars needs filling ⏳
