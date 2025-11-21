@@ -1,6 +1,6 @@
-# 🛠️ CI/CD Debugging Log
+git# 🛠️ CI/CD Debugging Log
 
-**Date**: 2025-11-21 19:45
+**Date**: 2025-11-21 20:25
 **Status**: Debugging in progress 🐞
 
 ---
@@ -9,34 +9,25 @@
 
 ### 1. Backend Dockerfile CMD Path (FIXED)
 - **Issue**: `infra/docker/backend.Dockerfile` was trying to run `dist/index.js`.
-- **Reality**: The compiled file is `dist/server.js` (based on `package.json`).
 - **Fix**: Updated CMD to `["node", "dist/server.js"]`.
-- **Status**: Committed, waiting for push.
+- **Status**: Committed.
 
-### 2. GitHub Actions Workflow
-- **Observation**: "Merge pull request #1" failed.
-- **Hypothesis**: Might be due to the Dockerfile issue or previous config.
-- **Action**: Pushing the Dockerfile fix should trigger a new run.
+### 2. Missing Lock Files (CRITICAL)
+- **Issue**: CI failed with `Error: Some specified paths were not resolved, unable to cache dependencies.` and `npm error audit This command requires an existing lockfile.`
+- **Cause**: `backend/package-lock.json` and `frontend/package-lock.json` were not tracked in git.
+- **Fix**: Force added both files to git.
+- **Status**: Committed.
 
----
-
-## 🧪 Local Verification
-
-Running the following checks locally to ensure stability:
-
-- [ ] `npm ci` (Backend) - In progress
-- [ ] `npm ci` (Frontend) - In progress
-- [ ] `npm test` (Backend) - In progress
-- [ ] `npm run lint` (Backend) - In progress
-- [ ] `npm run build` (Backend) - In progress
-- [ ] `npm run build` (Frontend) - In progress
+### 3. Git Sync
+- **Issue**: Push rejected because local is behind remote.
+- **Action**: Running `git pull origin main` to merge remote changes.
 
 ---
 
 ## 🚀 Next Steps
 
-1. **Approve Git Push**: Send the Dockerfile fix to GitHub.
-2. **Monitor CI**: Watch the new workflow run.
-3. **Verify Azure**: Continue with Terraform deployment once CI is green.
+1. **Sync**: Ensure `git pull` completes.
+2. **Push**: Send both fixes (Dockerfile + Lockfiles) to GitHub.
+3. **Monitor CI**: The new run should pass caching, audit, and build steps.
 
 ---
