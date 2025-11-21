@@ -1,0 +1,91 @@
+version: "3.9"
+
+services:
+  # -------------------------------------------------
+  # PostgreSQL Database
+  # -------------------------------------------------
+  db:
+    image: postgres:15-alpine
+    container_name: tm-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-tm_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-tm_password}
+      POSTGRES_DB: ${POSTGRES_DB:-tm_db}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      - ../../db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-tm_user}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
+
+  # -------------------------------------------------
+  # Backend API (Node.js/Express)
+  # -------------------------------------------------
+  backend:
+    build:
+      context: ../..
+      dockerfile: infra/docker/backend.Dockerfile
+    container_name: tm-backend
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: ${DATABASE_URL:-postgresql://tm_user:tm_password@db:5432/tm_db}
+      PORT: ${BACKEND_PORT:-4000}
+      NODE_ENV: ${NODE_ENV:-production}
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "4000:4000"
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:4000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - app-network
+
+  # -------------------------------------------------
+  # Frontend UI (React/Vite + Nginx)
+  # -------------------------------------------------
+  frontend:
+    build:
+      context: ../..
+      dockerfile: infra/docker/frontend.Dockerfile
+      args:
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:4000}
+    container_name: tm-frontend
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "80:80"
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - app-network
+
+# -------------------------------------------------
+# Volumes
+# -------------------------------------------------
+volumes:
+  db-data:
+    driver: local
+
+# -------------------------------------------------
+# Networks
+# -------------------------------------------------
+networks:
+  app-network:
+    driver: bridge

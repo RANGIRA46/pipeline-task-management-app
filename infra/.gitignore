@@ -1,0 +1,37 @@
+# Terraform
+*.tfstate
+*.tfstate.*
+*.tfvars
+!*.tfvars.example
+.terraform/
+.terraform.lock.hcl
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraformrc
+terraform.rc
+
+# Docker
+.env
+!.env.example
+
+# Ansible
+*.retry
+.vault_pass
+group_vars/
+host_vars/
+
+# Kubernetes
+secrets.yaml
+*.key
+*.crt
+
+# Scripts
+*.log
+
+# OS
+.DS_Store
+Thumbs.db

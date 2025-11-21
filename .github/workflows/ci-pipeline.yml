@@ -113,6 +113,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Build Backend Image
-        run: docker build -t taskmanager-backend:${{ github.sha }} ./backend
+        run: docker build -f infra/docker/backend.Dockerfile -t taskmanager-backend:${{ github.sha }} .
       - name: Build Frontend Image
-        run: docker build -t taskmanager-frontend:${{ github.sha }} ./frontend
+        run: docker build -f infra/docker/frontend.Dockerfile -t taskmanager-frontend:${{ github.sha }} .
