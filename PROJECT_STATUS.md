@@ -140,7 +140,7 @@
 ### Part B: Initial CI Pipeline
 
 #### ⏳ Step 16: Create Lint and Test Workflow
-- [ ] .github/workflows/ci-pipeline.yml created
+- [x] .github/workflows/ci-pipeline.yml created
 - [ ] Backend linting job
 - [ ] Frontend linting job
 - [ ] Backend testing job with PostgreSQL service
