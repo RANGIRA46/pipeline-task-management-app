@@ -181,26 +181,26 @@
 - [ ] Test authentication
 
 #### ⏳ Step 20: Create Terraform Backend Configuration
-- [ ] backend.tf created
-- [ ] Update organization name
-- [ ] Configure providers
+- [x] backend.tf created
+- [x] Update organization name
+- [x] Configure providers
 
 #### ⏳ Step 21: Create Main Infrastructure Configuration
-- [ ] main.tf created with resources:
-  - [ ] Resource Group
-  - [ ] Virtual Network
-  - [ ] Subnet
-  - [ ] Network Security Group
-  - [ ] Public IP
-  - [ ] Network Interface
-  - [ ] Linux Virtual Machine
-  - [ ] Azure Container Registry
-  - [ ] Role assignments
+- [x] main.tf created with resources:
+  - [x] Resource Group
+  - [x] Virtual Network
+  - [x] Subnet
+  - [x] Network Security Group
+  - [x] Public IP
+  - [x] Network Interface
+  - [x] Linux Virtual Machine
+  - [x] Azure Container Registry
+  - [x] Role assignments
 
 #### ⏳ Step 22: Create Variables Configuration
-- [ ] variables.tf created
-- [ ] outputs.tf created
-- [ ] terraform.tfvars.example created
+- [x] variables.tf created
+- [x] outputs.tf created
+- [x] terraform.tfvars.example created
 
 #### ⏳ Step 23: Initialize and Apply Terraform
 - [ ] Generate SSH key pair

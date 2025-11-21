@@ -1,0 +1,6 @@
+project_name   = "devopspipeline"
+environment    = "dev"
+location       = "East US"
+vm_size        = "Standard_B2s"
+admin_username = "azureuser"
+# ssh_public_key = "ssh-rsa AAAA..." # Uncomment and add your public key
