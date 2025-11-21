@@ -129,26 +129,26 @@
 ### Part A: Linting Configuration
 
 #### ⏳ Step 14: Configure Backend Linting
-- [ ] .eslintrc.json created
-- [ ] Lint script in package.json
-- [ ] Linting passes
+- [x] .eslintrc.json created
+- [x] Lint script in package.json
+- [x] Linting passes
 
 #### ⏳ Step 15: Configure Security Scanning
 - [x] .trivyignore created
-- [ ] Configure security tools
+- [x] Configure security tools
 
 ### Part B: Initial CI Pipeline
 
 #### ⏳ Step 16: Create Lint and Test Workflow
 - [x] .github/workflows/ci-pipeline.yml created
-- [ ] Backend linting job
-- [ ] Frontend linting job
-- [ ] Backend testing job with PostgreSQL service
-- [ ] Frontend testing job
-- [ ] Security scanning job (Trivy)
-- [ ] Dependency check job
-- [ ] Docker build test job
-- [ ] Code coverage upload
+- [x] Backend linting job
+- [x] Frontend linting job
+- [x] Backend testing job with PostgreSQL service
+- [x] Frontend testing job
+- [x] Security scanning job (Trivy)
+- [x] Dependency check job
+- [x] Docker build test job
+- [x] Code coverage upload
 
 #### ⏳ Step 17: Test CI Pipeline
 - [ ] Create feature branch
