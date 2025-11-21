@@ -12,13 +12,13 @@ terraform {
     }
   }
 
-  cloud {
-    organization = "your-org-name"
+  # cloud {
+  #   organization = "your-org-name"
     
-    workspaces {
-      name = "devops-pipeline-infrastructure"
-    }
-  }
+  #   workspaces {
+  #     name = "devops-pipeline-infrastructure"
+  #   }
+  # }
 }
 
 provider "azurerm" {
