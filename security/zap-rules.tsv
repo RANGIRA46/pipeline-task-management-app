@@ -1,0 +1,7 @@
+# Ignore rules for OWASP ZAP scanning
+# Format: <alert_id>	<rule_id>	<url_pattern>	WARN|IGNORE	<description>
+
+# Example: Ignore false positives
+# 10021	Cross-Domain JavaScript Source File Inclusion	.*	WARN	Third-party CDN scripts
+
+# Add your custom rules below:
