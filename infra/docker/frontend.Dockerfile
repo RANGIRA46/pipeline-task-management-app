@@ -19,7 +19,7 @@ RUN npm ci
 COPY frontend/ ./
 
 # Build argument for API URL
-ARG VITE_API_URL=http://localhost:4000
+ARG VITE_API_URL=http://localhost:3000
 ENV VITE_API_URL=$VITE_API_URL
 
 # Build production bundle

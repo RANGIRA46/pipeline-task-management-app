@@ -48,15 +48,15 @@ COPY --from=builder --chown=nodejs:nodejs /app/dist ./dist
 USER nodejs
 
 # Expose API port
-EXPOSE 4000
+EXPOSE 3000
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-    CMD wget --quiet --tries=1 --spider http://localhost:4000/health || exit 1
+    CMD wget --quiet --tries=1 --spider http://localhost:3000/health || exit 1
 
 # Environment variables (can be overridden at runtime)
 ENV NODE_ENV=production \
-    PORT=4000
+    PORT=3000
 
 # Start the application
 CMD ["node", "dist/server.js"]

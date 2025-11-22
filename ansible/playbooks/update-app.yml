@@ -1,0 +1,46 @@
+---
+- name: Quick Update Application Containers
+  hosts: app_servers
+  become: yes
+  gather_facts: no
+  
+  vars:
+    app_dir: /home/azureuser/app
+  
+  tasks:
+    - name: Log in to Azure Container Registry
+      community.docker.docker_login:
+        registry_url: "{{ lookup('env', 'ACR_LOGIN_SERVER') }}"
+        username: "{{ lookup('env', 'ARM_CLIENT_ID') }}"
+        password: "{{ lookup('env', 'ARM_CLIENT_SECRET') }}"
+        reauthorize: yes
+      when: lookup('env', 'ACR_LOGIN_SERVER') != ''
+    
+    - name: Pull latest images
+      community.docker.docker_compose:
+        project_src: "{{ app_dir }}"
+        pull: yes
+    
+    - name: Recreate containers with new images
+      community.docker.docker_compose:
+        project_src: "{{ app_dir }}"
+        state: present
+        recreate: always
+    
+    - name: Wait for services to be healthy
+      pause:
+        seconds: 20
+    
+    - name: Check backend health
+      uri:
+        url: "http://localhost:3000/health"
+        status_code: 200
+      register: health_check
+      until: health_check.status == 200
+      retries: 15
+      delay: 5
+      ignore_errors: yes
+    
+    - name: Display status
+      debug:
+        msg: "Deployment complete! Application should be accessible at http://{{ ansible_default_ipv4.address }}"

@@ -1,0 +1,2 @@
+# This file keeps the inventory directory in git
+# The actual hosts file will be created dynamically by CI/CD

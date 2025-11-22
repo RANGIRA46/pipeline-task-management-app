@@ -1,116 +1,133 @@
-# Ansible Configuration Management
+# Ansible Configuration for Task Manager Deployment
 
-Automated server configuration and application deployment
+This directory contains Ansible playbooks and configuration for automated deployment.
 
-## Prerequisites
-
-- Ansible (>= 2.14)
-- Python 3.10+
-- Azure CLI
-- SSH access to target servers
-
-## Setup
-
-```bash
-# Install Ansible
-pip install ansible
-
-# Install required collections
-ansible-galaxy collection install azure.azcollection
-ansible-galaxy collection install community.docker
-
-# Install Azure dependencies
-pip install -r https://raw.githubusercontent.com/ansible-collections/azure/dev/requirements-azure.txt
-```
-
-## Directory Structure
+## Structure
 
 ```
 ansible/
-├── playbooks/          # Playbook files
-│   └── setup-server.yml
-├── roles/              # Ansible roles
-│   ├── docker/        # Docker installation
-│   ├── security/      # Security hardening
-│   ├── monitoring/    # Monitoring setup
-│   └── app-deploy/    # Application deployment
-├── inventory/          # Inventory files
-│   ├── azure_rm.yml   # Dynamic Azure inventory
-│   └── hosts.example  # Static inventory example
-└── ansible.cfg         # Ansible configuration
+├── ansible.cfg           # Ansible configuration
+├── inventory/            # Inventory files (created dynamically by CI/CD)
+├── playbooks/
+│   ├── setup-server.yml  # Full server setup (first-time)
+│   └── update-app.yml    # Quick app updates
+└── README.md
 ```
 
-## Roles
+## Playbooks
 
-### docker
-Installs and configures Docker and Docker Compose
+### setup-server.yml
+Full server configuration including:
+- Docker installation
+- ACR authentication
+- Application deployment
+- Firewall configuration
+- Health checks
 
-### security
-- Configures UFW firewall
-- Sets up Fail2ban
-- Enables automatic security updates
-- Hardens system settings
-
-### monitoring
-- Installs monitoring tools
-- Configures system status scripts
-
-### app-deploy
-- Logs into ACR
-- Pulls Docker images
-- Deploys application
-- Verifies deployment
-
-## Usage
-
-### Test Connection
+**Usage:**
 ```bash
-ansible all -m ping -i inventory/azure_rm.yml
+ansible-playbook playbooks/setup-server.yml -i inventory/hosts -v
 ```
 
-### Run Playbook (Check Mode)
-```bash
-ansible-playbook playbooks/setup-server.yml \
-  -i inventory/azure_rm.yml \
-  --check
-```
+### update-app.yml
+Quick application update (assumes server is already configured):
+- Pull latest images from ACR
+- Recreate containers
+- Verify health
 
-### Run Playbook
+**Usage:**
 ```bash
-ansible-playbook playbooks/setup-server.yml \
-  -i inventory/azure_rm.yml
-```
-
-### Run Specific Role
-```bash
-ansible-playbook playbooks/setup-server.yml \
-  -i inventory/azure_rm.yml \
-  --tags docker
+ansible-playbook playbooks/update-app.yml -i inventory/hosts
 ```
 
 ## Environment Variables
 
-Required environment variables:
-```bash
-export ACR_NAME="your-acr-name"
-export ACR_LOGIN_SERVER="your-acr.azurecr.io"
-export ARM_CLIENT_ID="azure-client-id"
-export ARM_CLIENT_SECRET="azure-client-secret"
-export ARM_TENANT_ID="azure-tenant-id"
-export IMAGE_TAG="latest"
-export DB_USER="dbuser"
-export DB_PASSWORD="dbpassword"
-export DB_NAME="taskmanager"
-```
+The playbooks expect these environment variables:
+
+- `ACR_LOGIN_SERVER` - Azure Container Registry URL
+- `ARM_CLIENT_ID` - Azure Service Principal client ID
+- `ARM_CLIENT_SECRET` - Azure Service Principal secret
+- `ARM_TENANT_ID` - Azure tenant ID
+- `IMAGE_TAG` - Docker image tag to deploy
+- `DB_USER` - Database username
+- `DB_PASSWORD` - Database password
+- `DB_NAME` - Database name
 
 ## Inventory
 
-### Dynamic Azure Inventory
-Uses `azure_rm.yml` to automatically discover Azure VMs
+The inventory file is created dynamically by the CI/CD pipeline:
 
-### Static Inventory
-Create `inventory/hosts`:
 ```ini
 [app_servers]
-azure-vm ansible_host=<VM_IP> ansible_user=azureuser
+azure-vm ansible_host=YOUR_VM_IP ansible_user=azureuser
+```
+
+## Local Testing
+
+To test locally:
+
+1. Create inventory file:
+```bash
+cat > inventory/hosts <<EOF
+[app_servers]
+test-server ansible_host=YOUR_IP ansible_user=azureuser
+EOF
+```
+
+2. Set environment variables:
+```bash
+export ACR_LOGIN_SERVER=your-acr.azurecr.io
+export ARM_CLIENT_ID=your-client-id
+export ARM_CLIENT_SECRET=your-secret
+export IMAGE_TAG=latest
+export DB_USER=devops
+export DB_PASSWORD=devops123
+export DB_NAME=devops_app
+```
+
+3. Run playbook:
+```bash
+ansible-playbook playbooks/setup-server.yml -i inventory/hosts -v
+```
+
+## CI/CD Integration
+
+The CD pipeline automatically:
+1. Creates inventory with VM IP
+2. Sets required environment variables
+3. Runs `setup-server.yml` playbook
+4. Verifies deployment
+
+## Troubleshooting
+
+### SSH Issues
+```bash
+# Add VM to known hosts
+ssh-keyscan -H YOUR_VM_IP >> ~/.ssh/known_hosts
+```
+
+### Docker Login Issues
+```bash
+# Test ACR login
+az acr login --name YOUR_ACR_NAME
+```
+
+### Connectivity Issues
+```bash
+# Test Ansible connection
+ansible app_servers -i inventory/hosts -m ping
+```
+
+### View Logs
+```bash
+# SSH into server
+ssh azureuser@YOUR_VM_IP
+
+# Check containers
+docker ps
+
+# View logs
+docker logs taskmanager-backend
+docker logs taskmanager-frontend
+docker logs taskmanager-db
 ```
