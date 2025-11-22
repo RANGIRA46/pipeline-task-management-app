@@ -76,14 +76,13 @@
         state: started
         enabled: yes
     
-    # ===== Configure Azure Container Registry =====
-    - name: Log in to Azure Container Registry
+    # ===== Configure Docker Hub Authentication =====
+    - name: Log in to Docker Hub
       community.docker.docker_login:
-        registry_url: "{{ lookup('env', 'ACR_LOGIN_SERVER') }}"
-        username: "{{ lookup('env', 'ARM_CLIENT_ID') }}"
-        password: "{{ lookup('env', 'ARM_CLIENT_SECRET') }}"
+        username: "{{ lookup('env', 'DOCKER_USERNAME') }}"
+        password: "{{ lookup('env', 'DOCKER_PASSWORD') }}"
         reauthorize: yes
-      when: lookup('env', 'ACR_LOGIN_SERVER') != ''
+      when: lookup('env', 'DOCKER_USERNAME') != ''
     
     # ===== Setup Application Directory =====
     - name: Create application directory
@@ -125,7 +124,7 @@
                 retries: 5
           
             backend:
-              image: {{ lookup('env', 'ACR_LOGIN_SERVER') }}/devops-backend:{{ lookup('env', 'IMAGE_TAG') | default('latest', true) }}
+              image: {{ lookup('env', 'DOCKER_USERNAME') }}/taskmanager-backend:{{ lookup('env', 'IMAGE_TAG') | default('latest', true) }}
               container_name: taskmanager-backend
               restart: unless-stopped
               environment:
@@ -147,7 +146,7 @@
                 start_period: 40s
           
             frontend:
-              image: {{ lookup('env', 'ACR_LOGIN_SERVER') }}/devops-frontend:{{ lookup('env', 'IMAGE_TAG') | default('latest', true) }}
+              image: {{ lookup('env', 'DOCKER_USERNAME') }}/taskmanager-frontend:{{ lookup('env', 'IMAGE_TAG') | default('latest', true) }}
               container_name: taskmanager-frontend
               restart: unless-stopped
               environment:
@@ -241,12 +240,38 @@
           dangling: false
       ignore_errors: yes
     
-    - name: Remove unused Docker volumes
-      community.docker.docker_prune:
-        volumes: yes
-      ignore_errors: yes
-  
-  post_tasks:
+    # ===== Setup Monitoring =====
+    - name: Install monitoring tools
+      apt:
+        name:
+          - prometheus-node-exporter
+          - sysstat
+          - htop
+        state: present
+    
+    - name: Enable node exporter
+      systemd:
+        name: prometheus-node-exporter
+        state: started
+        enabled: yes
+    
+    - name: Create monitoring script
+      copy:
+        content: |
+          #!/bin/bash
+          echo "=== System Status ==="
+          echo "CPU Usage:"
+          top -bn1 | grep "Cpu(s)" | sed "s/.*, *\([0-9.]*\)%* id.*/\1/" | awk '{print 100 - $1"%"}'
+          echo "Memory Usage:"
+          free -m | awk 'NR==2{printf "%.2f%%\n", $3*100/$2 }'
+          echo "Disk Usage:"
+          df -h | awk '$NF=="/"{printf "%s\n", $5}'
+          echo "Docker Containers:"
+          docker ps --format "table {{.Names}}\t{{.Status}}"
+        dest: /usr/local/bin/system-status.sh
+        mode: '0755'
+    
+    # ===== Cleanup =====
     - name: Display deployment summary
       debug:
         msg: |
